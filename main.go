@@ -3,25 +3,26 @@ package main
 import (
 	"log"
 	"net/http"
-	"os"
 
 	"authapi/internal/auth"
+	"authapi/internal/config"
 	"authapi/internal/db"
 	"authapi/internal/handlers"
 
 	"github.com/go-chi/chi/v5"
-	"github.com/joho/godotenv"
 )
 
 func main() {
-	err := godotenv.Load()
+	config, err := config.GetConfig()
+
 	if err != nil {
-		log.Fatal("Error loading .env file")
+		log.Fatalf("config error: %v", err)
 	}
 
-	dsn := os.Getenv("DATABASE_URL")
-
-	conn, err := db.Connect(dsn)
+	if config.DB_URL == "" {
+		log.Fatal("DATABASE_URL is empty")
+	}
+	conn, err := db.Connect(config.DB_URL)
 	if err != nil {
 		log.Fatal(err)
 	}

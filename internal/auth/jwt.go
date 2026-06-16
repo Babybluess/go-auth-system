@@ -4,11 +4,14 @@ import (
 	"errors"
 	"time"
 
+	"authapi/internal/config"
+
 	"github.com/golang-jwt/jwt/v5"
 )
 
 // In production, load this from an environment variable.
-var jwtSecret = []byte("SZTYEqxB93ASUzjCD1JuXL1maIMbOu9pLKcntU1XpVQ")
+var jwt_secret string = config.Config{}.JWT_SECRET
+var jwtSecret = []byte(jwt_secret)
 
 type Claims struct {
 	UserID int `json:"user_id"`

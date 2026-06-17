@@ -19,8 +19,8 @@ func (h *UserHandler) Me(w http.ResponseWriter, r *http.Request) {
 
 	var u models.User
 	err := h.DB.QueryRow(
-		`SELECT id, email, created_at FROM users WHERE id = $1`, userID,
-	).Scan(&u.ID, &u.Email, &u.CreatedAt)
+		`SELECT id, email, role, created_at FROM users WHERE id = $1`, userID,
+	).Scan(&u.ID, &u.Email, &u.Role, &u.CreatedAt)
 	if err != nil {
 		http.Error(w, "user not found", http.StatusNotFound)
 		return

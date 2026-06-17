@@ -36,7 +36,8 @@ func main() {
 
 	// Public routes - no token required
 	r.Post("/register", authHandler.Register)
-	r.Post("/login", authHandler.Login)
+	r.With(auth.LoginRateLimit).Post("/login", authHandler.Login)
+	r.With(auth.LoginRateLimit).Post("/refresh", authHandler.Refresh)
 
 	// Protected routes - JWT middleware required
 	r.Group(func(r chi.Router) {

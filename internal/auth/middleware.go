@@ -10,7 +10,10 @@ import (
 
 type contextKey string
 
-const UserIDKey contextKey = "userID"
+const (
+	UserIDKey contextKey = "userID"
+	RoleKey   contextKey = "role"
+)
 
 // Logger logs method, path, status, and latency for every request.
 func Logger(next http.Handler) http.Handler {
@@ -38,6 +41,22 @@ func RequireAuth(next http.Handler) http.Handler {
 		}
 
 		ctx := context.WithValue(r.Context(), UserIDKey, claims.UserID)
+		ctx = context.WithValue(ctx, RoleKey, claims.Role)
 		next.ServeHTTP(w, r.WithContext(ctx))
 	})
+}
+
+// RequireRole checks that the authenticated user has the given role.
+// Must be chained after RequireAuth.
+func RequireRole(role string) func(http.Handler) http.Handler {
+	return func(next http.Handler) http.Handler {
+		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			userRole, ok := r.Context().Value(RoleKey).(string)
+			if !ok || userRole != role {
+				http.Error(w, "forbidden", http.StatusForbidden)
+				return
+			}
+			next.ServeHTTP(w, r)
+		})
+	}
 }

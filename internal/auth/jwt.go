@@ -14,15 +14,17 @@ var jwt_secret string = config.Config{}.JWT_SECRET
 var jwtSecret = []byte(jwt_secret)
 
 type Claims struct {
-	UserID int `json:"user_id"`
+	UserID int    `json:"user_id"`
+	Role   string `json:"role"`
 	jwt.RegisteredClaims
 }
 
-func GenerateToken(userID int) (string, error) {
+func GenerateToken(userID int, role string) (string, error) {
 	claims := Claims{
 		UserID: userID,
+		Role:   role,
 		RegisteredClaims: jwt.RegisteredClaims{
-			ExpiresAt: jwt.NewNumericDate(time.Now().Add(24 * time.Hour)),
+			ExpiresAt: jwt.NewNumericDate(time.Now().Add(15 * time.Minute)),
 			IssuedAt:  jwt.NewNumericDate(time.Now()),
 		},
 	}
